@@ -112,7 +112,7 @@ const c = a.pipe(
 
 > 理论上当`notifier`程序发出时,`takeUntil`运算符返回的Observable完成,自动取消订阅任何订阅者
 
-> 但是`c的订阅者`没有订阅takeUntil返回的`Observable`而是订阅了`combineLatest`或`switchMap`返回的Observable ,所以它不会在`takeUntil` observable完成后自动取消订阅
+> 但是`c的订阅者`没有订阅takeUntil返回的`Observable`而是订阅了`combineLatest`或`switchMap`返回的Observable ,所以它不会在`takeUntil` Observable完成后自动取消订阅
 
 > `c的订阅者`将保持订阅直到所有Observable传递给`combinedLast`或`switchMap`完成,因此,除非在`notifier`发出之前完成b,否则对b的订阅将泄漏
 
@@ -489,7 +489,7 @@ export class Widget {
 </section>
 ```
 
-> 上述代码的问题是我们在`alert$`Observable对象上创建了多个订阅，每个异步管道都有一个
+> 上述代码的问题是我们在`alert$`Observable对象上创建了多个订阅,每个异步管道都有一个
 
 > Angular提供了一个通过`*ngIf`的解决方案处理上述状况
 
@@ -509,12 +509,12 @@ export class Widget {
 1. 只创建了一个`async`管道并只创建了一次订阅的过程
 2. 本地变量`alert`以更合理的方式重复使用
 
-> 使用这样的方案当然是无可厚非也没有错误，但是存在一些`舒适度的问题`
+> 使用这样的方案当然是无可厚非也没有错误,但是存在一些`舒适度的问题`
 
-1. 代码语义意义丢失了，代码没有正确地表达它的含义：分不清是进行条件渲染，或者只需将表达式的结果传递给子视图
-2. 如果`*ngIf`的值为falsy，则在`ngIf`指令中使用它意味着将不会完全呈现视图,这可能不是期望的结果
+1. 代码语义意义丢失了,代码没有正确地表达它的含义：分不清是进行条件渲染,或者只需将表达式的结果传递给子视图
+2. 如果`*ngIf`的值为falsy,则在`ngIf`指令中使用它意味着将不会完全呈现视图,这可能不是期望的结果
 
-> 出于这些原因创建一个解决上述问题的指令(目的是订阅一个observable并将结果公开给它的子视图)是很有意义的
+> 出于这些原因创建一个解决上述问题的指令(目的是订阅一个Observable并将结果公开给它的子视图)是很有意义的
 
 ```html
 <section *ngSubscribe="alerts$ as alerts">
@@ -528,7 +528,7 @@ export class Widget {
 </section>
 ```
 
-> 类似于`*ngIf`，`*ngSubscribe`也是一个结构型指令
+> 类似于`*ngIf`,`*ngSubscribe`也是一个结构型指令
 
 ```typescript
 export class NgSubscribeContext {
@@ -541,17 +541,17 @@ export class NgSubscribeContext {
 })
 export class NgSubscribeDirective implements OnInit, OnDestroy {
 
-  private observable: Observable<any>;
+  private Observable: Observable<any>;
   private context: SubscribeContext = new NgSubscribeContext();
   private subscription: Subscription;
 
 @Input()
   set ngSubscribe(inputObservable: Observable<any>) {
-    if (this.observable !== inputObservable) {
-      this.observable = inputObservable;
+    if (this.Observable !== inputObservable) {
+      this.Observable = inputObservable;
       // 重置订阅
       this.subscription && this.subscription.unsubscribe();
-      this.subscription = this.observable.subscribe(value => {
+      this.subscription = this.Observable.subscribe(value => {
         this.context.ngSubscribe = value;
         // markForCheck用于应用onPush策略
         this.cdr.markForCheck();
@@ -575,7 +575,7 @@ export class NgSubscribeDirective implements OnInit, OnDestroy {
 }
 ```
 
-> 需要订阅输入Observable，通过context将结果传递给模板，值得注意的是调用`markForCheck`来支持采取了`OnPush`策略的组件
+> 需要订阅输入Observable,通过context将结果传递给模板,值得注意的是调用`markForCheck`来支持采取了`OnPush`策略的组件
 
 > 在模板中使用的`as alerts`实际上绑定到了`ngSubscribe`的`contest`中
 
